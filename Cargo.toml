@@ -1,0 +1,30 @@
+[package]
+name = "actix_pgs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.0"
+
+# Diesel ORM with PostgreSQL support
+diesel = { version = "2.2.6", features = ["postgres", "r2d2", "chrono"] }
+
+# Connection pooling
+r2d2 = "0.8.10"
+
+# JWT authentication
+jsonwebtoken = "9.3.0"
+
+# Password hashing
+bcrypt = "0.16.0"
+
+# Environment variable management
+dotenvy = "0.15.7"
+
+# Serialization/Deserialization
+serde = { version = "1.0.216", features = ["derive"] }
+serde_json = "1.0.134"
+
+# Date and time handling
+chrono = { version = "0.4.39", features = ["serde"] }
+regex = "1.11.1"
