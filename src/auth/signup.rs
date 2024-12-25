@@ -3,8 +3,8 @@ use bcrypt::{hash, DEFAULT_COST};
 use diesel::prelude::*;
 use regex::Regex;
 
-use crate::db::db::establish_connection;
-use crate::models::models::{SignupRequest, User};
+use crate::db::db::{establish_connection, get_connection};
+use crate::models::models::{NewUser, SignupRequest, User};
 use crate::schema::schema::users;
 
 pub async fn signup(signup_data: web::Json<SignupRequest>) -> impl Responder {
@@ -23,11 +23,13 @@ pub async fn signup(signup_data: web::Json<SignupRequest>) -> impl Responder {
         return HttpResponse::BadRequest().json("Invalid email format");
     }
 
-    let connection = &mut establish_connection();
+    let pool = establish_connection();
+    let connection = &mut get_connection(&pool);
 
     // Check if email already exists
     let existing_user = users::table
         .filter(users::email.eq(&signup_data.email))
+        .select(User::as_select())
         .first::<User>(connection)
         .optional();
 
@@ -49,12 +51,11 @@ pub async fn signup(signup_data: web::Json<SignupRequest>) -> impl Responder {
         }
     };
 
-    // Create new user
-    let new_user = SignupRequest {
+    // Create new user with NewUser struct
+    let new_user = NewUser {
         name: signup_data.name.clone(),
         email: signup_data.email.clone(),
-        password: password_hash,
-        confirm_password: password_hash.clone(),
+        password_hash: password_hash.clone(),
     };
 
     let result = diesel::insert_into(users::table)

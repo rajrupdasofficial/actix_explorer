@@ -1,3 +1,4 @@
+use crate::schema::schema::users;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -18,7 +19,7 @@ pub struct NewUser {
     pub password_hash: String,
 }
 
-#[derive(Queryable, Serialize, Deserialize)]
+#[derive(Queryable, Serialize, Deserialize, Selectable)]
 pub struct User {
     pub id: i32,
     pub name: String,
